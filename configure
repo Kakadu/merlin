@@ -161,7 +161,12 @@ FULL_VERSION=$(ocamlfind c -version | tr -d '\015')
 case "$CMI_NUMBER" in
   "Caml1999I017")
     OCAML_VERSION="402"
-    if [ "x$FULL_VERSION" = "x4.02.0" ]; then
+    
+    if [ "x$FULL_VERSION" = "x4.02.2+multicore-dev0" ]; then
+      OCAML_VERSION_MESSAGE="OCaml 4.02.2 with effects"
+      OCAML_VERSION_VAL='`OCaml_4_02_2'
+      OCAML_VERSION="402eff"
+    elif [ "x$FULL_VERSION" = "x4.02.0" ]; then
       OCAML_VERSION_MESSAGE="OCaml 4.02.0"
       filter_file src/ocaml_402/typing/typecore.ml \
         grep -v -F '| Scan_next_char 

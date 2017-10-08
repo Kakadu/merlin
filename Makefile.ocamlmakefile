@@ -123,6 +123,8 @@ SOURCES_LIB = \
 	src/ocaml/support/cmi_cache.ml    \
 	$(TYPER)/utils/consistbl.ml       \
 	$(TYPER)/utils/consistbl.mli      \
+	$(TYPER)/utils/terminfo.ml        \
+	$(TYPER)/utils/terminfo.mli       \
 	$(TYPER)/typing/env.mli           \
 	$(TYPER)/typing/env.ml            \
 	$(TYPER)/typing/typedtree.mli     \
