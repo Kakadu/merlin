@@ -225,13 +225,15 @@ let of_expression_desc loc = function
         | (_,None,_) -> id_fold
         | (_,Some e,_) -> of_expression e)
       ls
-  | Texp_match (e,cs1,cs2,_) ->
+  | Texp_match (e,cs1,cs2,cs3,_) ->
     of_expression e **
     list_fold of_case cs1 **
-    list_fold of_case cs2
-  | Texp_try (e,cs) ->
+    list_fold of_case cs2 **
+    list_fold of_case cs3
+  | Texp_try (e,cs,cs2) ->
     of_expression e **
-    list_fold of_case cs
+    list_fold of_case cs **
+    list_fold of_case cs2
   | Texp_tuple es | Texp_construct (_,_,es) | Texp_array es ->
     list_fold of_expression es
   | Texp_variant (_,Some e) | Texp_field (e,_,_)

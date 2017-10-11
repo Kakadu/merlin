@@ -16,7 +16,7 @@ open Types
 open Format
 
 val type_module:
-        Env.t -> Parsetree.module_expr -> Typedtree.module_expr
+        ?alias:bool -> Env.t -> Parsetree.module_expr -> Typedtree.module_expr
 val type_structure:
         Env.t -> Parsetree.structure -> Location.t ->
          Typedtree.structure * Types.signature * Env.t
@@ -31,7 +31,7 @@ val type_interface:
 val transl_signature:
         Env.t -> Parsetree.signature -> Typedtree.signature
 val check_nongen_schemes:
-        Env.t -> Typedtree.structure_item list -> unit
+        Env.t -> Types.signature_item list -> unit
 val type_open_:
         ?toplevel:bool -> Asttypes.override_flag ->
         Env.t -> Location.t -> Longident.t Asttypes.loc -> Path.t * Env.t
@@ -80,3 +80,14 @@ module ImplementationHooks : Misc.HookSig
   with type t = Typedtree.structure * Typedtree.module_coercion
 module InterfaceHooks : Misc.HookSig
   with type t = Typedtree.signature
+
+(* merlin *)
+
+val normalize_signature : Env.t -> Types.signature -> unit
+
+val merlin_type_structure:
+  Env.t -> Parsetree.structure -> Location.t ->
+  Typedtree.structure * Types.signature * Env.t
+
+val merlin_transl_signature:
+  Env.t -> Parsetree.signature -> Typedtree.signature

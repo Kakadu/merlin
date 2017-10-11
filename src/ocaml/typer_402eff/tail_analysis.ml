@@ -52,9 +52,10 @@ let expr_tail_positions = function
   | Texp_while _ | Texp_for _ | Texp_send _ | Texp_new _
     -> []
   (* Match with no exception handler *)
-  | Texp_match (_,cs,[],_)
-  | Texp_match (_,_,cs,_) | Texp_try (_,cs)
+  | Texp_match (_,cs,[],__,_)
+  | Texp_match (_,_,cs,__,_) | Texp_try (_,cs,__)
     -> List.map cs ~f:(fun c -> Case c)
+  (* kakadu: I added underscored but I don't know what is this file about *)
   | Texp_letmodule (_,_,_,e) | Texp_let (_,_,e)
   | Texp_sequence (_,e) | Texp_ifthenelse (_,e,None)
     -> [Expression e]

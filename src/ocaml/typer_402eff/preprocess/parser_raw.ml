@@ -5136,7 +5136,7 @@ and menhir_end_marker =
 
 # 5138 "src/ocaml/typer/preprocess/parser_raw.ml"
 
-# 219 "/home/kakadu/.opam/4.02.2+multicore+moreplugins/lib/menhir/standard.mly"
+# 219 "/home/kakadu/.opam/4.02.2+multicore+plugins/lib/menhir/standard.mly"
   
 
 

@@ -14,6 +14,14 @@
 
 open Types
 
+type aliasmap = {
+  am_typ: Path.t list Path_aux.Map.t;
+  am_mod: Path.t list Path_aux.Map.t;
+  am_open: Path_aux.Set.t;
+}
+
+val aliasmap_empty: aliasmap
+
 type summary =
     Env_empty
   | Env_value of summary * Ident.t * value_description
@@ -25,6 +33,7 @@ type summary =
   | Env_cltype of summary * Ident.t * class_type_declaration
   | Env_open of summary * Path.t
   | Env_functor_arg of summary * Ident.t
+  | Env_aliasmap of summary * aliasmap ref
 
 type t
 
@@ -37,13 +46,27 @@ type type_descriptions =
     constructor_description list * label_description list
 
 (* For short-paths *)
-type iter_cont
-val iter_types:
+val iter_types_and_aliases:
+    ?only_val:bool ->
     (Path.t -> Path.t * (type_declaration * type_descriptions) -> unit) ->
-    t -> iter_cont
-val run_iter_cont: iter_cont list -> (Path.t * iter_cont) list
+    (Path.t -> Path.t -> unit) ->
+    t -> unit
+
+val iter_module_types_and_aliases:
+    ?only_val:bool ->
+    (Path.t -> Path.t * (type_declaration * type_descriptions) -> unit) ->
+    (Path.t -> Path.t -> unit) ->
+    Ident.t -> t -> unit
+
+type type_diff = [ `Type of Ident.t * Path.t | `Module of Ident.t | `Open of Path.t ]
+val get_aliasmap: t -> (aliasmap -> type_diff list -> aliasmap) -> aliasmap
+
+val find_pers_map: string -> Path.t list Path_aux.Map.t * Path.t list Path_aux.Map.t
+val set_pers_map: string -> Path.t list Path_aux.Map.t * Path.t list Path_aux.Map.t -> unit
+
 val same_types: t -> t -> bool
 val used_persistent: unit -> Concr.t
+
 val find_shadowed_types: Path.t -> t -> Path.t list
 
 (* Lookup by paths *)
@@ -88,7 +111,7 @@ val lookup_all_constructors:
 val lookup_label: Longident.t -> t -> label_description
 val lookup_all_labels:
   Longident.t -> t -> (label_description * (unit -> unit)) list
-val lookup_type: Longident.t -> t -> Path.t * type_declaration
+val lookup_type: Longident.t -> t -> Path.t
 val lookup_module: load:bool -> Longident.t -> t -> Path.t
 val lookup_modtype: Longident.t -> t -> Path.t * modtype_declaration
 val lookup_class: Longident.t -> t -> Path.t * class_declaration
@@ -122,7 +145,7 @@ val add_signature: signature -> t -> t
 
 val open_signature:
     ?loc:Location.t -> ?toplevel:bool -> Asttypes.override_flag -> Path.t ->
-      signature -> t -> t
+    t -> t option
 val open_pers_signature: string -> t -> t
 
 (* Insertion by name *)
@@ -153,6 +176,7 @@ val get_unit_name: unit -> string
 
 val read_signature: string -> string -> signature
         (* Arguments: module name, file name. Results: signature. *)
+val find_signature: string -> signature
 val save_signature: signature -> string -> string -> signature
         (* Arguments: signature, module name, file name. *)
 val save_signature_with_imports:
@@ -170,8 +194,8 @@ val imports: unit -> (string * Digest.t option) list
 
 (* Direct access to the table of imported compilation units with their CRC *)
 
-val crc_units: Consistbl.t
-val add_import: string -> unit
+(* val crc_units: Consistbl.t *)
+(* val imported_units: string list ref *)
 
 (* Summaries -- compact representation of an environment, to be
    exported in debugging information. *)
@@ -261,3 +285,10 @@ val fold_cltypes:
 (** Utilities *)
 val scrape_alias: t -> module_type -> module_type
 val check_value_name: string -> Location.t -> unit
+
+(** merlin: manage internal state *)
+
+val state : Local_store.bindings
+val check_state_consistency: unit -> bool
+
+val with_cmis : (unit -> 'a) -> 'a

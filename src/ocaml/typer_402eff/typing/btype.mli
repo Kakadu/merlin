@@ -184,6 +184,12 @@ val backtrack: snapshot -> unit
            not already backtracked to a previous snapshot.
            Calls [cleanup_abbrev] internally *)
 
+(** merlin: check if a snapshot has been invalidated *)
+val is_valid: snapshot -> bool
+
+(** merlin: also register changes to arbitrary references *)
+val on_backtrack: (unit -> unit) -> unit
+
 (* Functions to use when modifying a type (only Ctype?) *)
 val link_type: type_expr -> type_expr -> unit
         (* Set the desc field of [t1] to [Tlink t2], logging the old
@@ -203,3 +209,12 @@ val log_type: type_expr -> unit
 
 (**** Forward declarations ****)
 val print_raw: (Format.formatter -> type_expr -> unit) ref
+
+(** merlin: manage all internal state *)
+
+val state : Local_store.bindings
+
+(* merlin: Number of unification variables that have been linked so far.
+   Used to estimate the "cost" of unification. *)
+val linked_variables: unit -> int
+

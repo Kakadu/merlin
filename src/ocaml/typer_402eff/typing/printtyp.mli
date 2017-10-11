@@ -24,8 +24,15 @@ val string_of_path: Path.t -> string
 val raw_type_expr: formatter -> type_expr -> unit
 
 val wrap_printing_env: Env.t -> (unit -> 'a) -> 'a
+val compute_map_for_pers: string -> bool
     (* Call the function using the environment for type path shortening *)
     (* This affects all the printing functions below *)
+val shorten_type_path: Env.t -> Path.t -> Path.t
+val shorten_module_type_path: Env.t -> Path.t -> Path.t
+val shorten_module_path: Env.t -> Path.t -> Path.t
+val shorten_class_type_path: Env.t -> Path.t -> Path.t
+
+val curr_printing_env: unit -> Env.t
 
 val reset: unit -> unit
 val mark_loops: type_expr -> unit
@@ -49,6 +56,7 @@ val tree_of_extension_constructor:
     Ident.t -> extension_constructor -> ext_status -> out_sig_item
 val extension_constructor:
     Ident.t -> formatter -> extension_constructor -> unit
+val tree_of_modtype: module_type -> out_module_type
 val tree_of_module: Ident.t -> module_type -> rec_status -> out_sig_item
 val modtype: formatter -> module_type -> unit
 val signature: formatter -> signature -> unit

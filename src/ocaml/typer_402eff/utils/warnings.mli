@@ -84,3 +84,7 @@ val help_warnings: unit -> unit
 type state
 val backup: unit -> state
 val restore: state -> unit
+
+(* merlin *)
+
+val dump : ?verbose:bool -> unit -> Std.json
