@@ -320,6 +320,7 @@ let let_operator startpos endpos op bindings cont =
 %token DOT [@symbol "."]
 %token DOTDOT [@symbol ".."]
 %token DOWNTO [@symbol "downto"]
+%token EFFECT [@symbol "effect"]
 %token ELSE [@symbol "else"]
 %token END [@symbol "end"]
 %token EOF
@@ -602,6 +603,8 @@ structure_tail:
     { mkstr $startpos $endpos (Pstr_typext $2) }
 | EXCEPTION [@item "exception"] str_exception_declaration
     { mkstr $startpos $endpos (Pstr_exception $2) }
+| EFFECT [@item "effect"] effect_declaration
+    { mkstr $startpos $endpos (Pstr_effect $2) }
 | MODULE [@item "module"] module_binding
     { mkstr $startpos $endpos (Pstr_module $2) }
 | MODULE REC [@item "recursive module"] module_bindings
@@ -682,6 +685,8 @@ signature :
     { mksig $startpos $endpos (Psig_typext $2) }
 | EXCEPTION [@item "exception"] sig_exception_declaration
     { mksig $startpos $endpos (Psig_exception $2) }
+| EFFECT [@item "effect"] effect_constructor_declaration
+    { mksig $startpos $endpos (Psig_effect $2) }
 | MODULE [@item "module"] UIDENT module_declaration post_item_attributes
     { mksig $startpos $endpos (Psig_module (Md.mk (mkrhs $startpos($2) $endpos($2) $2)
                              $3 ~attrs:$4 ~loc:(rloc $startpos $endpos))) }
@@ -1360,6 +1365,8 @@ pattern [@recovery default_pattern ()]:
     { mkpat $startpos $endpos (Ppat_lazy $2) }
 | EXCEPTION pattern %prec prec_constr_appl
     { mkpat $startpos $endpos (Ppat_exception $2) }
+| EFFECT simple_pattern simple_pattern
+    { mkpat $startpos $endpos (Ppat_effect ($2,$3)) }
 | pattern attribute
     { Pat.attr $1 $2 }
 simple_pattern :
@@ -1550,6 +1557,31 @@ sig_exception_declaration:
       let ext = $1 in
       {ext with pext_attributes = ext.pext_attributes @ $2}
     }
+effect_declaration:
+  | effect_constructor_declaration { $1 }
+  | effect_constructor_rebind { $1 }
+effect_constructor_declaration:
+| constr_ident attributes COLON core_type_list MINUSGREATER simple_core_type
+      post_item_attributes
+      {
+        Te.effect_decl (mkrhs $startpos($1) $endpos($1) $1) $6 ~args:(List.rev $4)
+   ~loc:(rloc $startpos $endpos)
+          ~attrs:($7 @ $2)
+      }
+| constr_ident attributes COLON simple_core_type post_item_attributes
+      {
+ Te.effect_decl (mkrhs $startpos($1) $endpos($1) $1) $4
+   ~loc:(rloc $startpos $endpos)
+          ~attrs:($5 @ $2)
+      }
+effect_constructor_rebind:
+| constr_ident attributes EQUAL constr_longident post_item_attributes
+      {
+ Te.effect_rebind (mkrhs $startpos($1) $endpos($1) $1)
+   (mkrhs $startpos($4) $endpos($4) $4)
+   ~loc:(rloc $startpos $endpos)
+          ~attrs:($5 @ $2)
+      }
 generalized_constructor_arguments :
 | (* empty *)
     { ([],None) }

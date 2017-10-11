@@ -106,6 +106,7 @@ type token =
   | EOF
   | END
   | ELSE
+  | EFFECT
   | DOWNTO
   | DOTTILDE
   | DOTLESS
@@ -261,6 +262,7 @@ module MenhirInterpreter : sig
     | T_EOF : unit terminal
     | T_END : unit terminal
     | T_ELSE : unit terminal
+    | T_EFFECT : unit terminal
     | T_DOWNTO : unit terminal
     | T_DOTTILDE : unit terminal
     | T_DOTLESS : unit terminal
@@ -333,7 +335,7 @@ module MenhirInterpreter : sig
     | N_simple_core_type_no_attr : (Parsetree.core_type) nonterminal
     | N_simple_core_type2 : (Parsetree.core_type) nonterminal
     | N_simple_core_type : (Parsetree.core_type) nonterminal
-    | N_signed_constant : (Asttypes.constant) nonterminal
+    | N_signed_constant : (Parsetree.constant) nonterminal
     | N_signature_item : (Parsetree.signature_item list) nonterminal
     | N_signature : (Parsetree.signature) nonterminal
     | N_sig_type_extension : (Parsetree.type_extension) nonterminal
@@ -436,6 +438,9 @@ module MenhirInterpreter : sig
   (string Asttypes.loc option * Parsetree.attributes)) nonterminal
     | N_expr_comma_list : (Parsetree.expression list) nonterminal
     | N_expr : (Parsetree.expression) nonterminal
+    | N_effect_declaration : (Parsetree.effect_constructor) nonterminal
+    | N_effect_constructor_rebind : (Parsetree.effect_constructor) nonterminal
+    | N_effect_constructor_declaration : (Parsetree.effect_constructor) nonterminal
     | N_direction_flag : (Asttypes.direction_flag) nonterminal
     | N_core_type_no_attr : (Parsetree.core_type) nonterminal
     | N_core_type_list_no_attr : (Parsetree.core_type list) nonterminal
@@ -450,7 +455,7 @@ module MenhirInterpreter : sig
     | N_constrain : (Parsetree.core_type * Parsetree.core_type * Ast_helper.loc) nonterminal
     | N_constr_longident : (Longident.t) nonterminal
     | N_constr_ident : (string) nonterminal
-    | N_constant : (Asttypes.constant) nonterminal
+    | N_constant : (Parsetree.constant) nonterminal
     | N_clty_longident : (Longident.t) nonterminal
     | N_class_type_parameters : ((Parsetree.core_type * Asttypes.variance) list) nonterminal
     | N_class_type_declarations : (Parsetree.class_type_declaration list) nonterminal
