@@ -88,6 +88,7 @@ let keyword_table : keywords =
     "done", DONE;
     "downto", DOWNTO;
     "else", ELSE;
+    "effect", EFFECT;
     "end", END;
     "exception", EXCEPTION;
     "external", EXTERNAL;
